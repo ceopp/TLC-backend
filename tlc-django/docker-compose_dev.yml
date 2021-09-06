@@ -1,0 +1,27 @@
+version: '2'
+services:
+
+  tlc-web:
+    restart: always
+    build: .
+    env_file: .env
+    container_name: tlc-web
+    command: bash -c "rm -rf celerybeat.pid && python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/site
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgresql-tlc
+
+  postgresql-tlc:
+    image: postgres:12
+    container_name: db_tlc
+    env_file: .env
+    volumes:
+      - db-tlc:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5431:5432"
+
+volumes:
+  db-tlc:
